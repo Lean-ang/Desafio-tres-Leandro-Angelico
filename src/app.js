@@ -2,7 +2,7 @@ import express from "express";
 import ProductManager from "./models/ProductManager.js";
 
 const PORT = process.env.PORT || 8080;
-const productsManagers = new ProductManager('./data/products.json');
+const productsManagers = new ProductManager('../data/products.json');
 const app = express();
 
 app.get('/products', async (req, res) => {
@@ -25,10 +25,10 @@ app.get('/products', async (req, res) => {
     }
 });
 
-app.get('/products/:pid', async(req, res) => {
+app.get('/products/:id', async(req, res) => {
     try {
-        const { pid } = req.params;
-        const productById = await productsManagers.getProductsById(+pid)
+        const { id } = req.params;
+        const productById = await productsManagers.getProductsById(+id)
         productById ? res.json(productById) : res.json({message: 'Error 404: Not found'})
     } 
     catch (error) {

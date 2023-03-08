@@ -14,7 +14,7 @@ app.get('/products', async (req, res) => {
             res.json(products);
         } else {
             const productLimit = [];
-            for (let i = 0; i < limitValue && i < 5; i++) {
+            for (let i = 0; i < limitValue && i < 10; i++) {
                 productLimit.push(products[i])
             }
             res.json(productLimit);
@@ -27,7 +27,7 @@ app.get('/products', async (req, res) => {
 
 app.get('/products/:id', async(req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params.id;
         const productById = await productsManagers.getProductsById(+id)
         productById ? res.json(productById) : res.json({message: 'Error 404: Not found'})
     } 

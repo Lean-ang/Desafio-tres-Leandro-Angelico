@@ -1,13 +1,14 @@
 import fs from "fs";
 
 export default class ProductManager {
+    #path
     constructor(path) {
-        this.path = path
+        this.#path = path
     }
 
     async #readingJSON(){
         try{
-            const data = await fs.promises.readFile(this.path, 'utf-8');
+            const data = await fs.promises.readFile(this.#path, 'utf-8');
             const dataJSON = JSON.parse(data);
             if (data === "") return []
             return dataJSON;
@@ -19,7 +20,7 @@ export default class ProductManager {
     async #dataSaving(item){
         try {
             const dataJSON = JSON.stringify(item);
-            await fs.promises.writeFile(this.path, dataJSON);
+            await fs.promises.writeFile(this.#path, dataJSON);
         } 
         catch (error) {
             console.log(error);

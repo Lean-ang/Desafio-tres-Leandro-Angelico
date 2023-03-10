@@ -68,7 +68,7 @@ export default class ProductManager {
             product.map(item => {
                 item.id === id && (productById = item);
             });
-            return productById ? console.log(productById) : console.log("Not Found");
+            return productById;
         }
         catch (error) {
             console.log(error);

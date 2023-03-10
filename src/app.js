@@ -26,10 +26,9 @@ app.get('/products', async (req, res) => {
 });
 
 app.get('/products/:id', async(req, res) => {
-    try {
-        const { id } = req.params.id;
-        const productById = await productsManagers.getProductsById(+id)
-        productById ? res.json(productById) : res.json({message: 'Error 404: Not found'})
+    try {       
+        const productById = await productsManagers.getProductsById(req.params.id)
+         res.json(productById) 
     } 
     catch (error) {
         console.log(error);

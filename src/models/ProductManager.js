@@ -2,29 +2,49 @@ import fs from "fs";
 
 export default class ProductManager {
     #path
+    #products
     constructor(path) {
         this.#path = path
+        this.#products =[]
     }
 
-    async #readingJSON(){
-        try{
-            const data = await fs.promises.readFile(this.#path, 'utf-8');
-            const dataJSON = JSON.parse(data);
-            return dataJSON;
-        }
-        catch (error) {
-            console.log(error);
-        }
+    //leer
+    async #readingJSON(){    
+            const data = await fs.promises.readFile(this.#path, 'utf-8')
+            this.#products = JSON.parse(data)                
     }
-    async #dataSaving(item){
-        try {
-            const dataJSON = JSON.stringify(item);
-            await fs.promises.writeFile(this.#path, dataJSON);
-        } 
-        catch (error) {
-            console.log(error);
-        }
+
+    //escribir
+    async #writingSave(){
+            const dataJSON = JSON.stringify(this.#products, null, 2)
+             await fs.promises.writeFile(this.#path, dataJSON)   
     }
+
+    //guardar
+    async dataSaving(item){
+        await this.#readingJSON()
+        this.#products.push(item)
+        await this.#writingSave()
+        return item 
+    }
+
+    //buscar
+    async getProducts(){
+        await this.#readingJSON()
+        return this.#products
+    }
+
+    //buscar por id
+    async getProductsById(id){       
+            await this.#readingJSON()
+            const prod = this.#products.find(prod => prod.id === id)
+            if (!prod){
+               throw new Error(`Id Not Found ${id}`)
+            }
+            return prod
+        }
+
+    //añadir
     async addProducts(item){
         try {
             const products = await this.#readingJSON();
@@ -37,7 +57,7 @@ export default class ProductManager {
                     item.id = lastId + 1;
                     let id = item.id;
                     products.push(item);
-                    this.#dataSaving(products);
+                    this.#writingSave(products);
                     console.log("Producto agregado")
                     return id;
                 }
@@ -45,7 +65,7 @@ export default class ProductManager {
              else {
                 item.id = 1;
                 products.push(item);
-                this.#dataSaving(products);
+                this.#writingSave(products);
                 console.log("Producto agregado")
             }
         } 
@@ -53,57 +73,30 @@ export default class ProductManager {
             console.log(error);
         }
     }
-    async getProducts(){
-        try {
-            return await this.#readingJSON();
-        } 
-        catch (error) {
-            console.log(error);
+    
+    async updatProduct(id, newItem){
+        await this.#readingJSON()
+        const index = this.#products.findIndex(prod => prod.id === id)
+        if (index === -1){
+            throw new Error('Id Not Found')
         }
+        this.#products[index] = newItem
+        await this.#writingSave()
+        return newItem
+        
     }
-    async getProductsById(id){
-        try {
-            const product = await this.#readingJSON();
-            let productById;
-            product.map(item => {
-                item.id === id && (productById = item);
-            });
-            return productById;
+
+    async deleteProductId(id){
+        await this.#readingJSON()
+        const index = this.#products.findIndex(prod => prod.id === id)
+        if (index === -1){
+            throw new Error('Id Not Found')
         }
-        catch (error) {
-            console.log(error);
-        }
+        const [del] = this.#products.splice(index, 1)
+        await this.#readingJSON()
+        return del      
     }
-    async updateProduct(item){
-        try {
-            const product = await this.#readingJSON();
-            const productId = product.findIndex(product => product.id === item.id)
-            if(productId >= 0){
-                product[productId] = item
-                await this.#dataSaving(product);
-                console.log("update!");
-            } else {
-                console.log("Not Found");
-            }
-        } 
-        catch (error) {
-            console.log(error);
-        }
-    }
-    async deleteProduct(id){
-        try {
-            const product = await this.#readingJSON();
-            const productId = product.findIndex(item => item.id === id);
-            if(productId >= 0) {
-                product.splice(1, productId);
-                await this.#dataSaving(product);
-                console.log("Producto eliminado");
-            } else {
-                console.log("Not Found");
-            }
-        } 
-        catch (error) {
-            console.log(error);
-        }
-    }
+    
 }
+
+

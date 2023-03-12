@@ -26,8 +26,8 @@ app.get('/products', async (req, res) => {
 });
 
 app.get('/products/:id', async(req, res) => {
-    try {       
-        const productById = await productsManagers.getProductsById(req.params.id)
+    try {     
+        const productById = await productsManagers.getProductsById(+req.params.id)
          res.json(productById) 
     } 
     catch (error) {
